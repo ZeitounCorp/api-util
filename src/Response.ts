@@ -82,7 +82,7 @@ export class Response {
       headers: {
         Authorization: this.key,
       },
-    }).then((resp) => resp.arrayBuffer().then((arrBuffer) => this.toBuffer(arrBuffer)));
+    }).then((resp: any) => resp.buffer());
 
     buffer = (buffer instanceof ArrayBuffer) ? this.toBuffer(buffer) : buffer;
 
