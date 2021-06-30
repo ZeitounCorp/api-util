@@ -1,5 +1,6 @@
 /// <reference types="node" />
 import { Response } from './Response';
+import Blob from 'cross-blob';
 declare type ExpressUtilsOptions = {
     serverKey?: string;
     clientKey?: string;
