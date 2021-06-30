@@ -43,6 +43,7 @@ var env_1 = require("./util/env");
 var errors_1 = require("./util/errors");
 var config_1 = require("./config");
 var RequestBuilder_1 = __importDefault(require("./RequestBuilder"));
+var cross_blob_1 = __importDefault(require("cross-blob"));
 /**
  * A class for interacting with the PDF.js Express REST APIs
  */
@@ -76,19 +77,21 @@ var ExpressUtils = /** @class */ (function () {
      */
     ExpressUtils.prototype.setFile = function (file) {
         // try to convert to a blob first
-        if (env_1.isClient && typeof file !== 'string' && !(file instanceof Blob) && !(file instanceof File)) {
+        if (env_1.isClient && typeof file !== 'string' && !(file instanceof cross_blob_1.default) && !(file instanceof File)) {
             try {
                 // @ts-ignore
-                file = new Blob([file], { type: 'application/pdf' });
+                file = new cross_blob_1.default([file], { type: 'application/pdf' });
             }
             catch (e) { }
         }
         var size;
-        console.log(typeof file, 'INSIDE EXPRESS API');
         if (typeof file === 'string') {
             size = 0; // string doesnt have a size
         }
-        else if (env_1.isClient && (file instanceof File || file instanceof Blob)) {
+        else if (env_1.isClient && (file instanceof File || file instanceof cross_blob_1.default)) {
+            size = file.size;
+        }
+        else if (!env_1.isClient && file instanceof cross_blob_1.default) {
             size = file.size;
         }
         else if (!env_1.isClient && file instanceof Buffer) {
