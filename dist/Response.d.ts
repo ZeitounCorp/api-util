@@ -1,3 +1,5 @@
+/// <reference types="node" />
+import Blob from 'cross-blob';
 declare type ResponseOptions = {
     url: string;
     id: string;
@@ -15,17 +17,24 @@ declare type ResponseOptions = {
  */
 export declare class Response {
     private blob?;
+    private buffer?;
     url?: string;
     id?: string;
     key?: string;
     xfdf?: string;
     license?: string;
-    constructor({ url, id, key, license, xfdf, }: ResponseOptions);
+    constructor({ url, id, key, license, xfdf }: ResponseOptions);
     /**
      * Fetches and returns the file as a Blob
      * @returns {Promise<Blob>}
      */
     getBlob(): Promise<Blob>;
+    /**
+     * Fetches and returns the file as a Buffer
+     * @returns {Promise<Buffer>}
+     */
+    getBuffer(): Promise<Buffer>;
+    toBuffer(ab: ArrayBuffer): Buffer;
     /**
      * Deletes the file from the server and destroys the instance.
      * If delete is not called, the file will still becoming inaccessible after 3 hours,

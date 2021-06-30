@@ -80,17 +80,57 @@ var Response = /** @class */ (function () {
                         return [4 /*yield*/, isomorphic_fetch_1.default(this.url, {
                                 method: 'get',
                                 headers: {
-                                    Authorization: this.key
+                                    Authorization: this.key,
                                 },
                             }).then(function (resp) { return resp.blob(); })];
                     case 1:
                         blob = _a.sent();
-                        blob = blob.slice(0, blob.size, "application/pdf");
+                        blob = blob.slice(0, blob.size, 'application/pdf');
                         this.blob = blob;
                         return [2 /*return*/, blob];
                 }
             });
         });
+    };
+    /**
+     * Fetches and returns the file as a Buffer
+     * @returns {Promise<Buffer>}
+     */
+    Response.prototype.getBuffer = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var buffer;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!this.url) {
+                            errors_1.throwInvalidRequestError('getBuffer', 'There is no output file to fetch');
+                        }
+                        if (this.buffer) {
+                            return [2 /*return*/, this.buffer];
+                        }
+                        return [4 /*yield*/, isomorphic_fetch_1.default(this.url, {
+                                method: 'get',
+                                headers: {
+                                    Authorization: this.key,
+                                },
+                            }).then(function (resp) { return resp.arrayBuffer().then(function (arrBuffer) { return _this.toBuffer(arrBuffer); }); })];
+                    case 1:
+                        buffer = _a.sent();
+                        buffer = (buffer instanceof ArrayBuffer) ? this.toBuffer(buffer) : buffer;
+                        this.buffer = buffer;
+                        return [2 /*return*/, buffer];
+                }
+            });
+        });
+    };
+    Response.prototype.toBuffer = function (ab) {
+        var buf = Buffer.alloc(ab.byteLength);
+        var view = new Uint8Array(ab);
+        for (var i = 0; i < buf.length; ++i) {
+            buf[i] = view[i];
+        }
+        return buf;
     };
     /**
      * Deletes the file from the server and destroys the instance.
@@ -123,7 +163,7 @@ var Response = /** @class */ (function () {
                         data.append('id', this.id);
                         return [4 /*yield*/, isomorphic_fetch_1.default(config_1.ENDPOINTS.DELETE.url, {
                                 method: config_1.ENDPOINTS.DELETE.method,
-                                body: data
+                                body: data,
                             })];
                     case 1:
                         _a.sent();

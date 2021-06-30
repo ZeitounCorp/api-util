@@ -1,8 +1,9 @@
 import { ENDPOINTS } from './config';
+import { isClient } from './util/env';
 import fetch from 'isomorphic-fetch';
 import ISOFormData from 'isomorphic-form-data';
 import { throwInvalidRequestError } from './util/errors';
-
+import Blob from 'cross-blob';
 
 type ResponseOptions = {
   url: string,
@@ -21,21 +22,15 @@ type ResponseOptions = {
  * @property {string} license The license that was passed to the API
  */
 export class Response {
-
   private blob?: Blob;
-  public url?: string
-  public id?: string
-  public key?: string
-  public xfdf?: string
-  public license?: string
+  private buffer?: Buffer;
+  public url?: string;
+  public id?: string;
+  public key?: string;
+  public xfdf?: string;
+  public license?: string;
 
-  constructor({ 
-    url,
-    id,
-    key,
-    license,
-    xfdf,
-  }: ResponseOptions) {
+  constructor({ url, id, key, license, xfdf }: ResponseOptions) {
     this.url = url;
     this.id = id;
     this.key = key;
@@ -48,9 +43,8 @@ export class Response {
    * @returns {Promise<Blob>}
    */
   async getBlob(): Promise<Blob> {
-
     if (!this.url) {
-      throwInvalidRequestError('getBlob', 'There is no output file to fetch')
+      throwInvalidRequestError('getBlob', 'There is no output file to fetch');
     }
 
     if (this.blob) {
@@ -60,21 +54,56 @@ export class Response {
     let blob: Blob = await fetch(this.url, {
       method: 'get',
       headers: {
-        Authorization: this.key
+        Authorization: this.key,
       },
     }).then((resp: any) => resp.blob());
 
-    blob = blob.slice(0, blob.size, "application/pdf")
+    blob = blob.slice(0, blob.size, 'application/pdf');
 
     this.blob = blob;
     return blob;
   }
 
   /**
+   * Fetches and returns the file as a Buffer
+   * @returns {Promise<Buffer>}
+   */
+  async getBuffer(): Promise<Buffer> {
+    if (!this.url) {
+      throwInvalidRequestError('getBuffer', 'There is no output file to fetch');
+    }
+
+    if (this.buffer) {
+      return this.buffer;
+    }
+
+    let buffer: Buffer = await fetch(this.url, {
+      method: 'get',
+      headers: {
+        Authorization: this.key,
+      },
+    }).then((resp) => resp.arrayBuffer().then((arrBuffer) => this.toBuffer(arrBuffer)));
+
+    buffer = (buffer instanceof ArrayBuffer) ? this.toBuffer(buffer) : buffer;
+
+    this.buffer = buffer;
+    return buffer;
+  }
+
+  toBuffer(ab: ArrayBuffer) {
+    var buf = Buffer.alloc(ab.byteLength);
+    var view = new Uint8Array(ab);
+    for (var i = 0; i < buf.length; ++i) {
+        buf[i] = view[i];
+    }
+    return buf;
+}
+
+  /**
    * Deletes the file from the server and destroys the instance.
    * If delete is not called, the file will still becoming inaccessible after 3 hours,
    * and will be permanently deleted after ~24 hours.
-   * 
+   *
    * Deleting a file does not count as a transaction
    * @returns {Promise<void>}
    * @example
@@ -86,9 +115,8 @@ export class Response {
    * await resp.deleteFile(); // delete the file
    */
   async deleteFile() {
-
     if (!this.id) {
-      throwInvalidRequestError('deleteFile', 'There is no temporary file to delete')
+      throwInvalidRequestError('deleteFile', 'There is no temporary file to delete');
     }
 
     const data = new ISOFormData();
@@ -99,8 +127,8 @@ export class Response {
 
     await fetch(ENDPOINTS.DELETE.url, {
       method: ENDPOINTS.DELETE.method,
-      body: data as unknown as FormData
-    })
+      body: data as unknown as FormData,
+    });
 
     this.blob = undefined;
     this.url = undefined;
