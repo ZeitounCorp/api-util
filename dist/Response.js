@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -34,10 +35,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { ENDPOINTS } from './config';
-import fetch from 'isomorphic-fetch';
-import ISOFormData from 'isomorphic-form-data';
-import { throwInvalidRequestError } from './util/errors';
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Response = void 0;
+var config_1 = require("./config");
+var isomorphic_fetch_1 = __importDefault(require("isomorphic-fetch"));
+var isomorphic_form_data_1 = __importDefault(require("isomorphic-form-data"));
+var errors_1 = require("./util/errors");
 /**
  * A class representing a response from the API. Should not be created directly, but should be retrieved from methods in the ExpressUtils class.
  * @property {string} url The URL that you can download the file from
@@ -66,12 +72,12 @@ var Response = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         if (!this.url) {
-                            throwInvalidRequestError('getBlob', 'There is no output file to fetch');
+                            errors_1.throwInvalidRequestError('getBlob', 'There is no output file to fetch');
                         }
                         if (this.blob) {
                             return [2 /*return*/, this.blob];
                         }
-                        return [4 /*yield*/, fetch(this.url, {
+                        return [4 /*yield*/, isomorphic_fetch_1.default(this.url, {
                                 method: 'get',
                                 headers: {
                                     Authorization: this.key
@@ -108,15 +114,15 @@ var Response = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         if (!this.id) {
-                            throwInvalidRequestError('deleteFile', 'There is no temporary file to delete');
+                            errors_1.throwInvalidRequestError('deleteFile', 'There is no temporary file to delete');
                         }
-                        data = new ISOFormData();
+                        data = new isomorphic_form_data_1.default();
                         if (this.license) {
                             data.append('license', this.license);
                         }
                         data.append('id', this.id);
-                        return [4 /*yield*/, fetch(ENDPOINTS.DELETE.url, {
-                                method: ENDPOINTS.DELETE.method,
+                        return [4 /*yield*/, isomorphic_fetch_1.default(config_1.ENDPOINTS.DELETE.url, {
+                                method: config_1.ENDPOINTS.DELETE.method,
                                 body: data
                             })];
                     case 1:
@@ -132,4 +138,4 @@ var Response = /** @class */ (function () {
     };
     return Response;
 }());
-export { Response };
+exports.Response = Response;
