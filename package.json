@@ -46,7 +46,7 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
-    "cross-blob": "^3.0.0",
+    "cross-blob": "^1.2.2",
     "isomorphic-fetch": "^2.2.1",
     "isomorphic-form-data": "^2.0.0"
   },
