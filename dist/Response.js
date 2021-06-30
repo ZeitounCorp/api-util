@@ -99,7 +99,6 @@ var Response = /** @class */ (function () {
     Response.prototype.getBuffer = function () {
         return __awaiter(this, void 0, void 0, function () {
             var buffer;
-            var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -114,7 +113,7 @@ var Response = /** @class */ (function () {
                                 headers: {
                                     Authorization: this.key,
                                 },
-                            }).then(function (resp) { return resp.arrayBuffer().then(function (arrBuffer) { return _this.toBuffer(arrBuffer); }); })];
+                            }).then(function (resp) { return resp.buffer(); })];
                     case 1:
                         buffer = _a.sent();
                         buffer = (buffer instanceof ArrayBuffer) ? this.toBuffer(buffer) : buffer;
