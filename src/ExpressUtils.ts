@@ -3,6 +3,7 @@ import { isClient } from './util/env';
 import { throwFileTooLargeError, throwInvalidFileTypeError, throwInvalidXFDFError, throwMissingDataError } from './util/errors';
 import { MAX_FILE_SIZE, ENDPOINTS } from './config';
 import RequestBuilder from './RequestBuilder';
+import Blob from 'cross-blob';
 
 type ExpressUtilsOptions = {
   serverKey?: string,
@@ -77,6 +78,8 @@ class ExpressUtils {
     if (typeof file === 'string') {
       size = 0; // string doesnt have a size
     } else if (isClient && (file instanceof File || file instanceof Blob)) {
+      size = file.size;
+    } else if (!isClient && file instanceof Blob) {
       size = file.size;
     } else if (!isClient && file instanceof Buffer) {
       size = file.length;

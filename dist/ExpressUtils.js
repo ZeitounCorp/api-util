@@ -84,6 +84,7 @@ var ExpressUtils = /** @class */ (function () {
             catch (e) { }
         }
         var size;
+        console.log(typeof file, 'INSIDE EXPRESS API');
         if (typeof file === 'string') {
             size = 0; // string doesnt have a size
         }
