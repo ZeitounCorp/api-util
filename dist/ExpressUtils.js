@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -34,10 +35,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { isClient } from './util/env';
-import { throwFileTooLargeError, throwInvalidFileTypeError, throwInvalidXFDFError, throwMissingDataError } from './util/errors';
-import { MAX_FILE_SIZE, ENDPOINTS } from './config';
-import RequestBuilder from './RequestBuilder';
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var env_1 = require("./util/env");
+var errors_1 = require("./util/errors");
+var config_1 = require("./config");
+var RequestBuilder_1 = __importDefault(require("./RequestBuilder"));
 /**
  * A class for interacting with the PDF.js Express REST APIs
  */
@@ -61,7 +66,7 @@ var ExpressUtils = /** @class */ (function () {
             console.warn('No license key was provided, running in demo mode');
         }
         //@ts-ignore
-        this.activeKey = isClient ? clientKey : serverKey;
+        this.activeKey = env_1.isClient ? clientKey : serverKey;
         this.activeHeaders = {};
     }
     /**
@@ -71,7 +76,7 @@ var ExpressUtils = /** @class */ (function () {
      */
     ExpressUtils.prototype.setFile = function (file) {
         // try to convert to a blob first
-        if (isClient && typeof file !== 'string' && !(file instanceof Blob) && !(file instanceof File)) {
+        if (env_1.isClient && typeof file !== 'string' && !(file instanceof Blob) && !(file instanceof File)) {
             try {
                 // @ts-ignore
                 file = new Blob([file], { type: 'application/pdf' });
@@ -82,17 +87,17 @@ var ExpressUtils = /** @class */ (function () {
         if (typeof file === 'string') {
             size = 0; // string doesnt have a size
         }
-        else if (isClient && (file instanceof File || file instanceof Blob)) {
+        else if (env_1.isClient && (file instanceof File || file instanceof Blob)) {
             size = file.size;
         }
-        else if (!isClient && file instanceof Buffer) {
+        else if (!env_1.isClient && file instanceof Buffer) {
             size = file.length;
         }
         else {
-            throwInvalidFileTypeError();
+            errors_1.throwInvalidFileTypeError();
         }
-        if (size > MAX_FILE_SIZE) {
-            throwFileTooLargeError();
+        if (size > config_1.MAX_FILE_SIZE) {
+            errors_1.throwFileTooLargeError();
         }
         this.activeFile = file;
         return this;
@@ -113,7 +118,7 @@ var ExpressUtils = /** @class */ (function () {
      */
     ExpressUtils.prototype.setXFDF = function (xfdf) {
         if (typeof xfdf !== 'string' || xfdf.trim() === '') {
-            throwInvalidXFDFError();
+            errors_1.throwInvalidXFDFError();
         }
         this.activeXFDF = xfdf;
         return this;
@@ -144,10 +149,10 @@ var ExpressUtils = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         if (!this.activeXFDF || !this.activeFile) {
-                            return [2 /*return*/, throwMissingDataError('merge', ['file, xfdf'])];
+                            return [2 /*return*/, errors_1.throwMissingDataError('merge', ['file, xfdf'])];
                         }
-                        return [4 /*yield*/, new RequestBuilder()
-                                .setEndpoint(ENDPOINTS.MERGE)
+                        return [4 /*yield*/, new RequestBuilder_1.default()
+                                .setEndpoint(config_1.ENDPOINTS.MERGE)
                                 .setFile(this.activeFile)
                                 .setXFDF(this.activeXFDF)
                                 .setLicense(this.activeKey)
@@ -182,10 +187,10 @@ var ExpressUtils = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         if (!this.activeXFDF || !this.activeFile) {
-                            return [2 /*return*/, throwMissingDataError('set', ['file, xfdf'])];
+                            return [2 /*return*/, errors_1.throwMissingDataError('set', ['file, xfdf'])];
                         }
-                        return [4 /*yield*/, new RequestBuilder()
-                                .setEndpoint(ENDPOINTS.SET)
+                        return [4 /*yield*/, new RequestBuilder_1.default()
+                                .setEndpoint(config_1.ENDPOINTS.SET)
                                 .setFile(this.activeFile)
                                 .setXFDF(this.activeXFDF)
                                 .setLicense(this.activeKey)
@@ -215,10 +220,10 @@ var ExpressUtils = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         if (!this.activeFile) {
-                            return [2 /*return*/, throwMissingDataError('extract', ['file'])];
+                            return [2 /*return*/, errors_1.throwMissingDataError('extract', ['file'])];
                         }
-                        return [4 /*yield*/, new RequestBuilder()
-                                .setEndpoint(ENDPOINTS.EXTRACT)
+                        return [4 /*yield*/, new RequestBuilder_1.default()
+                                .setEndpoint(config_1.ENDPOINTS.EXTRACT)
                                 .setFile(this.activeFile)
                                 .setLicense(this.activeKey)
                                 .setHeaders(this.activeHeaders)
@@ -257,10 +262,10 @@ var ExpressUtils = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         if (!this.activeFile) {
-                            return [2 /*return*/, throwMissingDataError('watermark', ['file'])];
+                            return [2 /*return*/, errors_1.throwMissingDataError('watermark', ['file'])];
                         }
-                        return [4 /*yield*/, new RequestBuilder()
-                                .setEndpoint(ENDPOINTS.WATERMARK)
+                        return [4 /*yield*/, new RequestBuilder_1.default()
+                                .setEndpoint(config_1.ENDPOINTS.WATERMARK)
                                 .setFile(this.activeFile)
                                 .setLicense(this.activeKey)
                                 .setData(options)
@@ -305,4 +310,4 @@ var ExpressUtils = /** @class */ (function () {
     };
     return ExpressUtils;
 }());
-export default ExpressUtils;
+exports.default = ExpressUtils;

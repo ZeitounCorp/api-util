@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -34,10 +35,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { Response } from './Response';
-import { throwMissingDataError } from './util/errors';
-import fetch from 'isomorphic-fetch';
-import ISOFormData from 'isomorphic-form-data';
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var Response_1 = require("./Response");
+var errors_1 = require("./util/errors");
+var isomorphic_fetch_1 = __importDefault(require("isomorphic-fetch"));
+var isomorphic_form_data_1 = __importDefault(require("isomorphic-form-data"));
 var RequestBuilder = /** @class */ (function () {
     function RequestBuilder() {
     }
@@ -84,9 +89,9 @@ var RequestBuilder = /** @class */ (function () {
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
-                        form = new ISOFormData();
+                        form = new isomorphic_form_data_1.default();
                         if (!this.file || !this.endpoint) {
-                            throwMissingDataError('make', ['file', 'endpoint']);
+                            errors_1.throwMissingDataError('make', ['file', 'endpoint']);
                         }
                         form.append('file', this.file);
                         if (this.license) {
@@ -106,7 +111,7 @@ var RequestBuilder = /** @class */ (function () {
                         _c.label = 1;
                     case 1:
                         _c.trys.push([1, 4, , 5]);
-                        return [4 /*yield*/, fetch((_a = this.endpoint) === null || _a === void 0 ? void 0 : _a.url, {
+                        return [4 /*yield*/, isomorphic_fetch_1.default((_a = this.endpoint) === null || _a === void 0 ? void 0 : _a.url, {
                                 method: (_b = this.endpoint) === null || _b === void 0 ? void 0 : _b.method,
                                 body: form,
                             })];
@@ -125,7 +130,7 @@ var RequestBuilder = /** @class */ (function () {
                             throw new Error(error.message || error);
                         }
                         url = json.url, id = json.id, key = json.key, xfdf = json.xfdf;
-                        return [2 /*return*/, new Response({
+                        return [2 /*return*/, new Response_1.Response({
                                 url: url,
                                 id: id,
                                 key: key,
@@ -138,4 +143,4 @@ var RequestBuilder = /** @class */ (function () {
     };
     return RequestBuilder;
 }());
-export default RequestBuilder;
+exports.default = RequestBuilder;

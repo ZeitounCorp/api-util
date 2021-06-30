@@ -1,4 +1,7 @@
-export var isClient = (function () { return typeof window !== 'undefined'; })();
-export var isServer = (function () { return typeof window === 'undefined'; })();
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.env = exports.isServer = exports.isClient = void 0;
+exports.isClient = (function () { return typeof window !== 'undefined'; })();
+exports.isServer = (function () { return typeof window === 'undefined'; })();
 // @ts-ignore
-export var env = (function () { return typeof ENV === 'undefined' ? 'test' : ENV; })();
+exports.env = (function () { return typeof ENV === 'undefined' ? 'test' : ENV; })();
